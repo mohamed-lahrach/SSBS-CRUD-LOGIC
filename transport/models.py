@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
+from .exceptions import FreezeError, LifecycleError
+
 
 class Bus(models.Model):
     matricule = models.CharField(max_length=50)
@@ -12,7 +14,7 @@ class Bus(models.Model):
             old = Bus.objects.get(pk=self.pk)
 
             if old.routes.exists():
-                raise ValueError("Cannot modify bus assigned to routes")
+                raise FreezeError("Cannot modify bus assigned to routes")
 
         super().save(*args, **kwargs)
 
@@ -78,7 +80,7 @@ class Trip(models.Model):
         )
 
         if structural_changed:
-            raise ValueError("Trip structure is frozen")
+            raise FreezeError("Trip structure is frozen")
 
     def save(self, *args, **kwargs):
         self._check_structural_freeze()
@@ -89,10 +91,10 @@ class Trip(models.Model):
 
     def start(self):
         if self.status != self.STATUS_CREATED:
-            raise ValueError("Trip cannot be started")
+            raise LifecycleError("Trip cannot be started")
 
         if self.reservations.count() == 0:
-            raise ValueError("Cannot start trip with zero reservations")
+            raise LifecycleError("Cannot start trip with zero reservations")
 
         self.start_trip_at = timezone.now()
         self.status = self.STATUS_STARTED
@@ -100,7 +102,7 @@ class Trip(models.Model):
 
     def end(self):
         if self.status != self.STATUS_STARTED:
-            raise ValueError("Trip cannot be ended")
+            raise LifecycleError("Trip cannot be ended")
 
         self.end_trip_at = timezone.now()
         self.status = self.STATUS_ENDED

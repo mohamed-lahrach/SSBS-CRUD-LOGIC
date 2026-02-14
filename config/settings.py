@@ -38,7 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'transport',
+    'core',
+    'buses',
+    'routes',
+    'trips',
+    'reservations',
 ]
 
 MIDDLEWARE = [
@@ -117,3 +121,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'core.exception_handler.api_exception_handler',
+}

@@ -2,8 +2,11 @@ from django.db.models import ProtectedError
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_exception_handler
 
+from buses.models import Bus
+from routes.models import Route
+from trips.models import Trip
+
 from .exceptions import DomainError, IntegrityError
-from .models import Bus, Route, Trip
 
 
 def _protected_error_message(exc):

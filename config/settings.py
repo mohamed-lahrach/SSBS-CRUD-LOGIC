@@ -11,9 +11,24 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import copy
+
+from django.template.context import BaseContext
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _base_context_copy_py314_compat(self):
+    # Django 4.2 + Python 3.14 compatibility workaround for template Context copy.
+    duplicate = object.__new__(self.__class__)
+    duplicate.__dict__ = copy.copy(self.__dict__)
+    if hasattr(self, "dicts"):
+        duplicate.dicts = self.dicts[:]
+    return duplicate
+
+
+BaseContext.__copy__ = _base_context_copy_py314_compat
 
 
 # Quick-start development settings - unsuitable for production
@@ -39,6 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'core',
+    'organization',
+    'accounts',
     'buses',
     'routes',
     'trips',
@@ -125,3 +142,5 @@ STATIC_URL = 'static/'
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.exception_handler.api_exception_handler',
 }
+
+AUTH_USER_MODEL = 'accounts.User'

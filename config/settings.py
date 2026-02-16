@@ -144,3 +144,30 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'accounts.User'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'audit': {
+            'format': '%(asctime)s %(levelname)s %(message)s',
+        },
+    },
+    'handlers': {
+        'audit_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'audit.log',
+            'mode': 'a',
+            'formatter': 'audit',
+        },
+    },
+    'loggers': {
+        'audit': {
+            'handlers': ['audit_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

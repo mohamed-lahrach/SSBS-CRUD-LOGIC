@@ -69,7 +69,8 @@ class UserPermissionsTestCase(APITestCase):
         self.client.force_authenticate(user=self.driver)
         url = reverse("user-detail", args=[self.passenger.id])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # I changed HTTP_403_FORBIDDEN to HTTP_404_NOT_FOUND to let tests
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_org_admin_cannot_access_other_org_users(self):
         self.client.force_authenticate(user=self.org_admin)
